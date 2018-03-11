@@ -1,0 +1,21 @@
+﻿@model List <ViewModel.BlobViewModel>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Upload To Azure Blob Storage</h1>
+</div>
+<div>
+    <a href="@Href("~/Home/Upload")">Upload Image</a>
+</div>
+<br/>
+<br/>
+<table class="table table-bordered">
+@foreach (var item in Model)
+{
+    <tr>
+        <td><a href="@item.URI" target="_blank">@item.Name</a><br /></td>
+    </tr>
+}
+</table>
