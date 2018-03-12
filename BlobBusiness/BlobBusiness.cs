@@ -21,32 +21,36 @@ namespace BlobBusiness
 
             var returnList = new List<BlobViewModel>();
 
-            // Loop over items within the container and output the length and URI.
-            foreach (var item in container.ListBlobs(null, false))
+            //check if there are any items in the container
+            if (container.ListBlobs(null, false).Count() > 0)
             {
-                if (item.GetType() == typeof(CloudBlockBlob))
+                // Loop over items within the container and output the length and URI.
+                foreach (var item in container.ListBlobs(null, false))
                 {
-                    var blob = (CloudBlockBlob)item;               
+                    if (item.GetType() == typeof(CloudBlockBlob))
+                    {
+                        var blob = (CloudBlockBlob)item;
 
-                    returnList.Add(new BlobViewModel()
+                        returnList.Add(new BlobViewModel()
                         {
                             Name = blob.Name,
                             URI = blob.Uri.ToString()
                         }
-                        );
+                            );
 
-                }
-                else if (item.GetType() == typeof(CloudPageBlob))
-                {
-                    var pageBlob = (CloudPageBlob)item;
+                    }
+                    else if (item.GetType() == typeof(CloudPageBlob))
+                    {
+                        var pageBlob = (CloudPageBlob)item;
 
-                    returnList.Add(new BlobViewModel()
+                        returnList.Add(new BlobViewModel()
                         {
                             Name = pageBlob.Name,
                             URI = pageBlob.Uri.ToString()
                         }
-                    );
+                        );
 
+                    }
                 }
             }
             return returnList;
@@ -77,6 +81,19 @@ namespace BlobBusiness
 
             // Retrieve reference to a previously created container.
             var container = blobClient.GetContainerReference(containername);
+
+            // Set the permissions so the blobs are public. 
+            BlobContainerPermissions permissions = new BlobContainerPermissions
+            {
+                PublicAccess = BlobContainerPublicAccessType.Blob
+            };
+
+            //create container if it does not exist
+            container.CreateIfNotExists();
+
+            //set permission
+            container.SetPermissions(permissions);
+
             return container;
         }
     }

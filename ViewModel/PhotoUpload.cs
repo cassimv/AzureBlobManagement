@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -11,7 +12,7 @@ namespace ViewModel
 {
     public class PhotoUpload
     {
-        [Required]
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Please select file.")]
         public HttpPostedFileBase FileUpload { get; set; }
     }
 }
