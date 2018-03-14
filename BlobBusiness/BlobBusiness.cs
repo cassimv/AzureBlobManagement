@@ -70,6 +70,73 @@ namespace BlobBusiness
             blockBlob.UploadFromStream(file.InputStream);
         }
 
+        //Upload photo using optimistic concurrency
+        public void UploadPhotoOptimistic(string containername, HttpPostedFileBase file)
+        {
+            var container = GetBlobContainer(containername);
+
+            //Get File Name
+            var fileName = Path.GetFileName(file.FileName);
+
+            // Retrieve reference to a blob named "myblob".
+            var blockBlob = container.GetBlockBlobReference(fileName);
+
+            //Use the etag with optimistic concurrency
+            AccessCondition accessCondition = new AccessCondition
+            {
+                IfMatchETag = blockBlob.Properties.ETag
+            };
+
+            try
+            {
+                // Create or overwrite the "myblob" blob with contents from a local file.
+                blockBlob.UploadFromStream(file.InputStream, accessCondition);
+            }
+            catch (StorageException ex)
+            {
+                if (ex.RequestInformation.HttpStatusCode == (int)System.Net.HttpStatusCode.PreconditionFailed)
+                {
+                    throw new Exception("Precondition failure. Blob's orignal etag no longer matches");
+                }
+                else throw;
+            }
+
+        }
+
+        //Update photo using pesimistic concurrency (lease)
+        //You can only use a lease if you already have a blob created. Aquiring a lease on a new blob throws a HTTP 404 error
+        //Lease works on the following: Put Blob, Set Blob Metadata, Set Blob Properties, Delete Blob, Put Block, Put Block List, Put Page, Append Block, Copy Blob
+        public void UpdatePhotoLease(string containername, HttpPostedFileBase file)
+        {
+            var container = GetBlobContainer(containername);
+
+            //Get File Name
+            var fileName = Path.GetFileName(file.FileName);
+
+            // Retrieve reference to a blob named "myblob".
+            var blockBlob = container.GetBlockBlobReference(fileName);
+
+            //Set the least period to 15 seconds
+            AccessCondition accessCondition = new AccessCondition
+            {
+                LeaseId = blockBlob.AcquireLease(TimeSpan.FromSeconds(15), null)
+            };
+
+            try
+            {
+                // Overwrite the "myblob" blob with contents from a local file.
+                blockBlob.UploadFromStream(file.InputStream, accessCondition);
+            }
+            catch (StorageException ex)
+            {
+                if (ex.RequestInformation.HttpStatusCode == (int)System.Net.HttpStatusCode.PreconditionFailed)
+                    throw new Exception("Precondition failure. Error with the lease.");
+                else
+                    throw;
+            }
+
+        }
+
         private static CloudBlobContainer GetBlobContainer(string containername)
         {
             // Retrieve storage account from connection string.
