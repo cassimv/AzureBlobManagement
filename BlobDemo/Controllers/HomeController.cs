@@ -24,13 +24,17 @@ namespace BlobDemo.Controllers
         [HttpPost]
         public ActionResult Upload(PhotoUpload photo)
         {
-            if (photo.FileUpload != null && photo.FileUpload.ContentLength > 0)
+            if (ModelState.IsValid)
             {
-                var blobbusiness = new BlobBusiness.BlobBusiness();
-                blobbusiness.UploadPhoto("images", photo.FileUpload);
+                if (photo.FileUpload != null && photo.FileUpload.ContentLength > 0)
+                {
+                    var blobbusiness = new BlobBusiness.BlobBusiness();
+                    blobbusiness.UploadPhoto("images", photo.FileUpload);
+                }
             }
 
             return RedirectToAction("Index");            
+
         }
     }
 }
