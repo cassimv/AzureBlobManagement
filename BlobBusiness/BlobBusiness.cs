@@ -56,7 +56,7 @@ namespace BlobBusiness
             return returnList;
         }
 
-        public void UploadPhoto(string containername, HttpPostedFileBase file)
+        public void UploadPhotoAsync(string containername, HttpPostedFileBase file)
         {
             var container = GetBlobContainer(containername);
 
@@ -67,7 +67,7 @@ namespace BlobBusiness
             var blockBlob = container.GetBlockBlobReference(fileName);
 
             // Create or overwrite the "myblob" blob with contents from a local file.
-            blockBlob.UploadFromStream(file.InputStream);
+            blockBlob.UploadFromStreamAsync(file.InputStream);
         }
 
         //Upload photo using optimistic concurrency

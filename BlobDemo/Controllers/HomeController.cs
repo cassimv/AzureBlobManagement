@@ -29,7 +29,7 @@ namespace BlobDemo.Controllers
                 if (photo.FileUpload != null && photo.FileUpload.ContentLength > 0)
                 {
                     var blobbusiness = new BlobBusiness.BlobBusiness();
-                    blobbusiness.UploadPhoto("images", photo.FileUpload);
+                    blobbusiness.UploadPhotoAsync("images", photo.FileUpload);
                 }
             }
 
