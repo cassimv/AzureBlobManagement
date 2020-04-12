@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using ViewModel;
@@ -15,6 +16,7 @@ namespace BlobDemo.Controllers
             return View(blobbusiness.GetListOfBlobs("images"));
         }
 
+        [ActionName("Upload")]
         public ActionResult Upload()
         {
             ViewBag.Message = "Upload page.";
@@ -22,14 +24,15 @@ namespace BlobDemo.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Upload(PhotoUpload photo)
+        [ActionName("Upload")]
+        public async Task<ActionResult> UploadAsync(PhotoUpload photo)
         {
             if (ModelState.IsValid)
             {
                 if (photo.FileUpload != null && photo.FileUpload.ContentLength > 0)
                 {
                     var blobbusiness = new BlobBusiness.BlobBusiness();
-                    blobbusiness.UploadPhotoAsync("images", photo.FileUpload);
+                    await blobbusiness.UploadPhotoAsync("images", photo.FileUpload);
                 }
             }
 
