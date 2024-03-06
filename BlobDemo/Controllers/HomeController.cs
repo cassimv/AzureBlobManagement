@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.IO;
+
+using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using ViewModel;
 
@@ -32,7 +31,10 @@ namespace BlobDemo.Controllers
                 if (photo.FileUpload != null && photo.FileUpload.ContentLength > 0)
                 {
                     var blobbusiness = new BlobBusiness.BlobBusiness();
-                    await blobbusiness.UploadPhotoAsync("images", photo.FileUpload);
+                    var stream = new MemoryStream();
+                    photo.FileUpload.InputStream.CopyTo(stream);
+                    var binData = stream.ToArray();
+                    await blobbusiness.UploadPhotoAsync("images", photo.FileUpload.FileName, binData);
                 }
             }
 
